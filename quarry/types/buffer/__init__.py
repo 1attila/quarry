@@ -21,6 +21,7 @@ buff_types = [
     (759, Buffer1_19),
     (760, Buffer1_19_1),
     (765, Buffer1_20_4),
+    (767, Buffer1_20_4),
 ]
 
 
