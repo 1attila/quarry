@@ -59,3 +59,5 @@ def _load():
 
 default_protocol_version, minecraft_versions, \
 packet_names, packet_idents = _load()
+
+print("Packet names", packet_names)
