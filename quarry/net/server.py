@@ -178,6 +178,16 @@ class ServerProtocol(Protocol):
         if self.login_expecting != 0:
             raise ProtocolError("Out-of-order login")
 
+        if self.protocol_version >= 764:
+            self.display_name = buff.unpack_string()
+            self.uuid = buff.unpack_uuid()
+            
+            # In 1.21, encryption usually happens earlier or is skipped in simple proxies.
+            # We treat this as a successful offline-style login for the proxy wrapper.
+            self.login_expecting = None
+            self.player_joined()
+            return
+
         self.display_name = buff.unpack_string()
 
         if self.factory.online_mode:
