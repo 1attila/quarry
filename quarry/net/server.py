@@ -247,8 +247,6 @@ class ServerProtocol(Protocol):
 
             self.player_joined()
 
-        buff.discard()
-
     def packet_login_encryption_response(self, buff):
         if self.login_expecting != 1:
             raise ProtocolError("Out-of-order login")
