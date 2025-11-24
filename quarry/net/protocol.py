@@ -262,6 +262,10 @@ class Protocol(protocol.Protocol, PacketDispatcher, object):
         want to override this to implement your own dispatch logic or logging.
         """
 
+        if name in ("hello", "login_hello", "clientbound_hello", "serverbound_hello"):
+            self.logger.warning("IGNORING unsupported packet: %s (protocol %d)", name, self.protocol_version)
+            return
+
         self.log_packet(". recv", name)
 
         dispatched = self.dispatch((name,), buff)
