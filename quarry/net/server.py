@@ -13,6 +13,7 @@ from quarry.net.protocol import Factory, Protocol, ProtocolError, \
     protocol_modes
 from quarry.net import auth, crypto
 from quarry.types.uuid import UUID
+from quarry.types.buffer import BufferUnderrun
 
 
 class ServerProtocol(Protocol):
@@ -187,18 +188,31 @@ class ServerProtocol(Protocol):
                     self.public_key_data = buff.unpack_optional(buff.unpack_player_public_key)
                 except ValueError:
                     raise ProtocolError("Unable to parse profile public key")
+                except BufferUnderrun:
+                    self.logger.warning("LOGIN_START: BufferUnderrun mentre leggevo la public key → ignorata (protocol %d)", self.protocol_version)
+                    self.public_key_data = None
+                except Exception as e:
+                    self.logger.warning("LOGIN_START: errore inatteso leggendo la public key → %s", e)
+                    self.public_key_data = None
 
                 # Validate public key if present
                 if self.public_key_data is not None:
-                    if self.public_key_data.expiry < time.time():
-                        raise ProtocolError("Expired profile public key")
+                    try:
+                        if self.public_key_data.expiry < time.time():
+                            raise ProtocolError("Expired profile public key")
+                    except BufferUnderrun:
+                        self.logger.warning("LOGIN_START: BufferUnderrun durante la validazione della public key → ignorata")
+                        self.public_key_data = None
+                        pass
 
                     if self.protocol_version >= 760:
                         uuid = buff.unpack_optional(buff.unpack_uuid)  # 1.19.1+ may also send player UUID
                         valid = verify_mojang_v2_signature(self.public_key_data, uuid)
                     else:
                         valid = verify_mojang_v1_signature(self.public_key_data)
-
+                    self.logger.error("LOGIN_START DEBUG: protocol=%d raw_remaining=%s",
+                        self.protocol_version, getattr(buff, "_data", b"")[getattr(buff, "pos", 0):].hex()[:200])
+                    
                     if not valid:
                         raise ProtocolError("Invalid profile public key signature")
 
