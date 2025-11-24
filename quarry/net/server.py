@@ -174,6 +174,9 @@ class ServerProtocol(Protocol):
         self.connect_port = p_connect_port
 
     def packet_login_start(self, buff):
+
+        buff.discard()
+        
         if self.login_expecting != 0:
             raise ProtocolError("Out-of-order login")
 
