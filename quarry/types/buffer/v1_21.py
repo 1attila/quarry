@@ -29,6 +29,15 @@ class Buffer1_21(Buffer1_20_4):
 
         return uuid, name
 
+    # FIX: Login Success (Server -> Client)
+    def pack_login_success_1_21(self, uuid, name):
+        return (
+            self.pack_uuid(uuid) + 
+            self.pack_string(name) + 
+            self.pack_varint(0) +     # Numero proprietà (0)
+            self.pack_boolean(True)   # <--- ECCOLO! Strict Error Handling
+        )
+
     # --- CHAT ---
     def unpack_chat_command(self):
         return self.unpack_string()
