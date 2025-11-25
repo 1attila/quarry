@@ -105,7 +105,20 @@ class Buffer1_7(object):
         return fields
 
     # Array data types --------------------------------------------------------
+    
+    @classmethod
+    def pack_boolean(cls, val):
+        """
+        Packs a boolean.
+        """
+        return cls.pack('?', val)
 
+    def unpack_boolean(self):
+        """
+        Unpacks a boolean.
+        """
+        return self.unpack('?')
+        
     @classmethod
     def pack_array(cls, fmt, array):
         """
