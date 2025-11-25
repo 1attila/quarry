@@ -67,6 +67,7 @@ class ServerProtocol(Protocol):
                     self.buff_type.pack_uuid(self.uuid) +
                     self.buff_type.pack_string(self.display_name) +
                     self.buff_type.pack_varint(0))  # Profile properties
+                print("Called", self.protocol_version)
             elif self.protocol_version > 578:
                 self.send_packet(
                     "login_success",
@@ -88,7 +89,7 @@ class ServerProtocol(Protocol):
                     self.ticker.add_delay(10, make_safe)
 
                 make_unsafe()
-
+        print("Switched to", mode)
         self.protocol_mode = mode
 
     def close(self, reason=None):
