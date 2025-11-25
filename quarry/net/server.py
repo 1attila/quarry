@@ -61,7 +61,15 @@ class ServerProtocol(Protocol):
                 self.set_compression(self.factory.compression_threshold)
 
             # Send login success
-            if self.protocol_version >= 759:  # 1.19+
+            if self.protocol_version >= 767:
+                self.send_packet(
+                    "login_success",
+                    self.buff_type.pack_uuid(self.uuid) +
+                    self.buff_type.pack_string(self.display_name) +
+                    self.buff_type.pack_varint(0) +   # 0 Proprietà
+                    self.buff_type.pack_boolean(False) # Error not strict
+                )
+            elif self.protocol_version >= 759:  # 1.19+
                 self.send_packet(
                     "login_success",
                     self.buff_type.pack_uuid(self.uuid) +
@@ -128,11 +136,12 @@ class ServerProtocol(Protocol):
         """Called when auth with mojang succeeded (online mode only)"""
         self.display_name_confirmed = True
         self.uuid = UUID.from_hex(data['id'])
-
+        print("Called auth_ok")
         self.player_joined()
 
     def player_joined(self):
         """Called when the player joins the game"""
+        print("Called player_joined")
         Protocol.player_joined(self)
 
         self.logger.info("%s has joined." % self.display_name)
