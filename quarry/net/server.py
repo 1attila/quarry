@@ -61,14 +61,7 @@ class ServerProtocol(Protocol):
                 self.set_compression(self.factory.compression_threshold)
 
             # Send login success
-            if self.protocol_version >= 767: # 1.21
-                self.send_packet(
-                    "game_profile",
-                    self.buff_type.pack_uuid(self.uuid) + 
-                    self.buff_type.pack_string(self.display_name) +
-                    self.buff_type.pack_varint(0)
-                )
-            elif self.protocol_version >= 759:  # 1.19+
+            if self.protocol_version >= 759:  # 1.19+
                 self.send_packet(
                     "login_success",
                     self.buff_type.pack_uuid(self.uuid) +
