@@ -50,7 +50,7 @@ class ServerProtocol(Protocol):
 
     def switch_protocol_mode(self, mode):
         self.check_protocol_mode_switch(mode)
-        print("Called", mode)
+        print("Called", mode, self.protocol_mode)
         if mode == "play":
             if self.factory.compression_threshold and self.protocol_version >= 47:
                 # Send set compression
